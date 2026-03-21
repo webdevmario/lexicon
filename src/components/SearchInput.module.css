@@ -2,29 +2,34 @@
   position: relative;
   display: flex;
   align-items: center;
+  gap: var(--space-sm);
   background: var(--bg-card);
-  border: 1.5px solid var(--border-light);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  padding: var(--space-sm) var(--space-md);
+  padding: 10px var(--space-md);
   transition:
     border-color var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out);
-  box-shadow: var(--shadow-sm);
+    background var(--duration-fast) var(--ease-out);
 }
 
 .form:focus-within {
-  border-color: var(--border-focus);
-  box-shadow: var(--shadow-md);
+  border-color: var(--border-medium);
+  background: var(--bg-elevated);
 }
 
 .form.large {
-  padding: var(--space-md) var(--space-lg);
+  padding: 14px var(--space-lg);
   border-radius: var(--radius-xl);
 }
 
 .icon {
   flex-shrink: 0;
   color: var(--text-muted);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.form:focus-within .icon {
+  color: var(--text-tertiary);
 }
 
 .input {
@@ -33,15 +38,15 @@
   outline: none;
   background: transparent;
   font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 500;
   color: var(--text-primary);
-  padding: var(--space-xs) var(--space-sm);
+  padding: 0;
+  line-height: 1.4;
 }
 
 .form.large .input {
-  font-size: 1.15rem;
-  padding: var(--space-xs) var(--space-md);
+  font-size: 1.1rem;
 }
 
 .input::placeholder {
@@ -53,22 +58,32 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: var(--text-primary);
-  color: var(--bg-card);
+  color: var(--bg-primary);
   cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  transform: scale(0.85);
+  pointer-events: none;
   transition:
-    transform var(--duration-fast) var(--ease-spring),
-    background var(--duration-fast) var(--ease-out);
+    opacity var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.submitBtn.visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
 }
 
 .submitBtn:hover {
-  transform: scale(1.05);
+  opacity: 0.85;
 }
 
 .submitBtn:active {
-  transform: scale(0.95);
+  transform: scale(0.93);
 }

@@ -35,6 +35,8 @@ export default function SearchInput({
     [value, onSearch],
   );
 
+  const hasValue = value.trim().length > 0;
+
   return (
     <form
       className={`${styles.form} ${size === "large" ? styles.large : ""}`}
@@ -42,7 +44,7 @@ export default function SearchInput({
     >
       <SearchIcon
         className={styles.icon}
-        size={size === "large" ? 22 : 18}
+        size={size === "large" ? 20 : 16}
         strokeWidth={2}
       />
       <input
@@ -56,11 +58,15 @@ export default function SearchInput({
         autoComplete="off"
         autoCapitalize="off"
       />
-      {value.trim() && (
-        <button type="submit" className={styles.submitBtn} aria-label="Search">
-          <ArrowRight size={18} strokeWidth={2.5} />
-        </button>
-      )}
+      {/* Always rendered, just hidden when empty — prevents layout shift */}
+      <button
+        type="submit"
+        className={`${styles.submitBtn} ${hasValue ? styles.visible : ""}`}
+        aria-label="Search"
+        tabIndex={hasValue ? 0 : -1}
+      >
+        <ArrowRight size={16} strokeWidth={2.5} />
+      </button>
     </form>
   );
 }

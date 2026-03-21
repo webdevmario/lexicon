@@ -156,7 +156,7 @@ export const useWordStore = create<WordStore>()(
         // Support both formats: { words: [...] } and raw array
         const incoming: SavedWord[] = Array.isArray(parsed)
           ? parsed
-          : parsed?.words ?? [];
+          : (parsed?.words ?? []);
 
         if (!Array.isArray(incoming)) {
           throw new Error("Invalid import format.");

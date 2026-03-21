@@ -8,32 +8,20 @@ import styles from "./WordCard.module.css";
 
 interface WordCardProps {
   entry: WordEntry;
-  /** If true, shows a compact inline version */
   compact?: boolean;
 }
 
-const MASTERY_LABELS: Record<string, string> = {
-  new: "New",
-  learning: "Learning",
-  familiar: "Familiar",
-  mastered: "Mastered",
-};
-
 export default function WordCard({ entry, compact = false }: WordCardProps) {
-  const { isSaved, saveWord, removeWord, words } = useWordStore();
+  const { isSaved, saveWord, removeWord } = useWordStore();
   const { play, isPlaying } = useAudioPlayer();
 
   const saved = isSaved(entry.word);
-  const savedData = words[entry.word.toLowerCase()];
   const audioUrl = getAudioUrl(entry);
   const phonetic = getPhoneticText(entry);
 
   const handleHeart = () => {
-    if (saved) {
-      removeWord(entry.word);
-    } else {
-      saveWord(entry.word);
-    }
+    if (saved) removeWord(entry.word);
+    else saveWord(entry.word);
   };
 
   const handlePronounce = () => {
@@ -43,20 +31,14 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
   return (
     <motion.article
       className={`${styles.card} ${compact ? styles.compact : ""}`}
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
     >
-      {/* Header */}
       <header className={styles.header}>
         <div className={styles.wordGroup}>
           <h1 className={compact ? styles.wordCompact : styles.word}>{entry.word}</h1>
           {phonetic && <span className={styles.phonetic}>{phonetic}</span>}
-          {saved && savedData && (
-            <span className={styles.masteryBadge} data-level={savedData.mastery}>
-              {MASTERY_LABELS[savedData.mastery]}
-            </span>
-          )}
         </div>
 
         <div className={styles.actions}>
@@ -65,23 +47,20 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
               className={`${styles.iconBtn} ${isPlaying ? styles.playing : ""}`}
               onClick={handlePronounce}
               aria-label="Pronounce word"
-              title="Hear pronunciation"
             >
-              <Volume2 size={18} strokeWidth={2} />
+              <Volume2 size={17} strokeWidth={2} />
             </button>
           )}
           <button
             className={`${styles.heartBtn} ${saved ? styles.hearted : ""}`}
             onClick={handleHeart}
             aria-label={saved ? "Remove from saved" : "Save word"}
-            title={saved ? "Remove from saved" : "Save word"}
           >
-            <Heart size={18} strokeWidth={2} fill={saved ? "currentColor" : "none"} />
+            <Heart size={17} strokeWidth={2} fill={saved ? "currentColor" : "none"} />
           </button>
         </div>
       </header>
 
-      {/* Meanings */}
       <div className={styles.meanings}>
         {entry.meanings.map((meaning, i) => (
           <section key={`${meaning.partOfSpeech}-${i}`} className={styles.pos}>
@@ -91,11 +70,11 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
             </div>
 
             <ol className={styles.defList}>
-              {meaning.definitions.slice(0, compact ? 2 : 6).map((def, j) => (
+              {meaning.definitions.slice(0, compact ? 2 : 5).map((def, j) => (
                 <li
                   key={j}
                   className={styles.defItem}
-                  style={{ animationDelay: `${(i * 3 + j) * 60}ms` }}
+                  style={{ animationDelay: `${(i * 3 + j) * 50}ms` }}
                 >
                   <p className={styles.defText}>{def.definition}</p>
                   {def.example && !compact && (
@@ -105,7 +84,6 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
               ))}
             </ol>
 
-            {/* Synonyms */}
             {!compact && meaning.synonyms && meaning.synonyms.length > 0 && (
               <div className={styles.synonyms}>
                 <span className={styles.synLabel}>Synonyms</span>
@@ -118,25 +96,10 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
                 </div>
               </div>
             )}
-
-            {/* Antonyms */}
-            {!compact && meaning.antonyms && meaning.antonyms.length > 0 && (
-              <div className={styles.synonyms}>
-                <span className={styles.synLabel}>Antonyms</span>
-                <div className={styles.synTags}>
-                  {meaning.antonyms.slice(0, 6).map((ant) => (
-                    <span key={ant} className={`${styles.synTag} ${styles.antTag}`}>
-                      {ant}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
           </section>
         ))}
       </div>
 
-      {/* Origin */}
       {!compact && entry.origin && (
         <section className={styles.origin}>
           <h3 className={styles.originTitle}>Etymology</h3>
@@ -144,7 +107,6 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
         </section>
       )}
 
-      {/* Source link */}
       {!compact && entry.sourceUrls && entry.sourceUrls.length > 0 && (
         <footer className={styles.footer}>
           <a
@@ -153,7 +115,7 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
             rel="noopener noreferrer"
             className={styles.sourceLink}
           >
-            Source <ExternalLink size={12} />
+            Source <ExternalLink size={11} />
           </a>
         </footer>
       )}

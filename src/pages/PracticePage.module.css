@@ -16,11 +16,11 @@
 }
 
 .subtitle {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   color: var(--text-tertiary);
 }
 
-/* ── State Card (loading, ready, complete) ─ */
+/* ── State Card ──────────────────────────── */
 
 .stateCard {
   display: flex;
@@ -31,12 +31,11 @@
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
   padding: var(--space-3xl) var(--space-2xl);
-  box-shadow: var(--shadow-card);
   gap: var(--space-md);
 }
 
 .stateText {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text-tertiary);
 }
 
@@ -44,24 +43,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   border-radius: var(--radius-lg);
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
   margin-bottom: var(--space-sm);
 }
 
 .readyTitle {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   color: var(--text-primary);
 }
 
 .readyDesc {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text-tertiary);
-  max-width: 360px;
+  max-width: 340px;
   line-height: 1.55;
 }
 
@@ -72,35 +71,32 @@
   align-items: center;
   gap: var(--space-sm);
   font-family: var(--font-body);
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  padding: var(--space-sm) var(--space-xl);
+  padding: 8px var(--space-xl);
   border-radius: var(--radius-md);
   border: none;
   background: var(--text-primary);
-  color: var(--bg-card);
+  color: var(--bg-primary);
   cursor: pointer;
   margin-top: var(--space-md);
-  transition:
-    transform var(--duration-fast) var(--ease-spring),
-    opacity var(--duration-fast) var(--ease-out);
+  transition: opacity var(--duration-fast) var(--ease-out);
 }
 
 .startBtn:hover {
-  opacity: 0.9;
+  opacity: 0.85;
 }
-
 .startBtn:active {
   transform: scale(0.97);
 }
 
 .secondaryBtn {
   font-family: var(--font-body);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  padding: var(--space-sm) var(--space-lg);
+  padding: 8px var(--space-lg);
   border-radius: var(--radius-md);
-  border: 1.5px solid var(--border-light);
+  border: 1px solid var(--border-light);
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
@@ -110,19 +106,19 @@
 }
 
 .secondaryBtn:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
   border-color: var(--border-medium);
 }
 
 .ctaBtn {
   font-family: var(--font-body);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  padding: var(--space-sm) var(--space-lg);
+  padding: 8px var(--space-lg);
   border-radius: var(--radius-md);
   border: none;
   background: var(--text-primary);
-  color: var(--bg-card);
+  color: var(--bg-primary);
   cursor: pointer;
 }
 
@@ -143,13 +139,13 @@
 
 .scoreNumber {
   font-family: var(--font-display);
-  font-size: 4rem;
+  font-size: 3.5rem;
   line-height: 1;
   color: var(--text-primary);
 }
 
 .scoreTotal {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   color: var(--text-muted);
   font-family: var(--font-display);
 }
@@ -161,7 +157,6 @@
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
   padding: var(--space-xl) var(--space-2xl);
-  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
@@ -177,7 +172,7 @@
 
 .progressBar {
   flex: 1;
-  height: 4px;
+  height: 3px;
   background: var(--bg-tertiary);
   border-radius: 2px;
   overflow: hidden;
@@ -190,8 +185,8 @@
 }
 
 .progressText {
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--text-muted);
   white-space: nowrap;
   font-family: var(--font-mono);
@@ -201,7 +196,7 @@
 
 .prompt {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   line-height: 1.4;
   color: var(--text-primary);
 }
@@ -220,27 +215,22 @@
   justify-content: space-between;
   width: 100%;
   padding: var(--space-md) var(--space-lg);
-  border: 1.5px solid var(--border-light);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   background: transparent;
   font-family: var(--font-body);
-  font-size: 0.92rem;
-  color: var(--text-primary);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
   cursor: pointer;
   text-align: left;
   transition:
     background var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-spring);
+    border-color var(--duration-fast) var(--ease-out);
 }
 
 .optionBtn:hover:not(:disabled) {
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
   border-color: var(--border-medium);
-}
-
-.optionBtn:active:not(:disabled) {
-  transform: scale(0.99);
 }
 
 .optionBtn:disabled {
@@ -248,19 +238,19 @@
 }
 
 .optionBtn.correct {
-  background: #ecfdf5;
-  border-color: #34d399;
-  color: #065f46;
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.35);
+  color: #6ee7b7;
 }
 
 .optionBtn.incorrect {
-  background: #fef2f2;
-  border-color: #fca5a5;
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
 }
 
 .optionBtn.dimmed {
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
 .optionText {
@@ -284,13 +274,13 @@
 
 .feedbackCorrect {
   font-weight: 600;
-  font-size: 0.92rem;
-  color: #059669;
+  font-size: 0.9rem;
+  color: #6ee7b7;
 }
 
 .feedbackWrong {
   font-weight: 600;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   color: var(--accent);
 }
 
@@ -299,23 +289,20 @@
   align-items: center;
   gap: var(--space-xs);
   font-family: var(--font-body);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  padding: var(--space-sm) var(--space-lg);
+  padding: 8px var(--space-lg);
   border-radius: var(--radius-md);
   border: none;
   background: var(--text-primary);
-  color: var(--bg-card);
+  color: var(--bg-primary);
   cursor: pointer;
-  transition:
-    transform var(--duration-fast) var(--ease-spring),
-    opacity var(--duration-fast);
+  transition: opacity var(--duration-fast);
 }
 
 .nextBtn:hover {
-  opacity: 0.9;
+  opacity: 0.85;
 }
-
 .nextBtn:active {
   transform: scale(0.97);
 }
@@ -323,10 +310,10 @@
 /* ── Spinner ─────────────────────────────── */
 
 .spinner {
-  width: 24px;
-  height: 24px;
-  border: 2.5px solid var(--border-light);
-  border-top-color: var(--text-primary);
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border-light);
+  border-top-color: var(--text-muted);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }

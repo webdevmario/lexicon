@@ -14,7 +14,7 @@ export default function Shell() {
     <div className={styles.layout}>
       <nav className={styles.sidebar}>
         <div className={styles.brand}>
-          <BookOpen size={22} strokeWidth={2.5} />
+          <BookOpen size={20} strokeWidth={2.5} />
           <span className={styles.brandName}>Lexicon</span>
         </div>
 
@@ -28,20 +28,12 @@ export default function Shell() {
                   `${styles.navLink} ${isActive ? styles.active : ""}`
                 }
               >
-                <Icon size={18} strokeWidth={2} />
+                <Icon size={17} strokeWidth={2} />
                 <span>{label}</span>
               </NavLink>
             </li>
           ))}
         </ul>
-
-        <div className={styles.sidebarFooter}>
-          <span className={styles.footerText}>
-            Words are tools.
-            <br />
-            Collect the sharp ones.
-          </span>
-        </div>
       </nav>
 
       <main className={styles.content}>

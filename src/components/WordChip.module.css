@@ -2,45 +2,42 @@
   display: inline-flex;
   align-items: center;
   font-family: var(--font-body);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  padding: 6px 18px;
+  padding: 6px 16px;
   border-radius: 100px;
   border: none;
   cursor: pointer;
   transition:
     background var(--duration-fast) var(--ease-out),
     color var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-spring),
-    box-shadow var(--duration-fast) var(--ease-out);
+    transform var(--duration-fast) var(--ease-spring);
 }
 
 .chip:active {
   transform: scale(0.96);
 }
 
-/* Variants */
-
 .default {
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
   color: var(--text-secondary);
 }
 
 .default:hover {
-  background: var(--bg-tertiary);
+  background: var(--bg-elevated);
   color: var(--text-primary);
 }
 
 .outline {
   background: transparent;
-  color: var(--text-tertiary);
-  box-shadow: inset 0 0 0 1.5px var(--border-light);
+  color: var(--text-muted);
+  box-shadow: inset 0 0 0 1px var(--border-light);
 }
 
 .outline:hover {
-  background: var(--bg-secondary);
+  background: var(--bg-tertiary);
   color: var(--text-primary);
-  box-shadow: inset 0 0 0 1.5px var(--border-medium);
+  box-shadow: inset 0 0 0 1px var(--border-medium);
 }
 
 .accent {
@@ -49,6 +46,6 @@
 }
 
 .accent:hover {
-  background: #fecaca;
+  background: rgba(239, 68, 68, 0.18);
   color: var(--accent-hover);
 }

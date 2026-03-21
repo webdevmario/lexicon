@@ -1,89 +1,81 @@
 import { useState, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, Search, Trash2, Download, Upload } from "lucide-react";
+import { Heart, Search, X, Download, Upload, Volume2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWordStore } from "@/stores/wordStore";
 import { useWordLookup } from "@/hooks/useWordLookup";
+import { useAudioPlayer } from "@/hooks/useAudioPlayer";
+import { getAudioUrl, getPhoneticText } from "@/lib/api";
 import WordCard from "@/components/WordCard";
+import WordModal from "@/components/WordModal";
 import EmptyState from "@/components/EmptyState";
-import type { MasteryLevel } from "@/types";
 import styles from "./SavedPage.module.css";
 
-const MASTERY_FILTERS: { label: string; value: MasteryLevel | "all" }[] = [
-  { label: "All", value: "all" },
-  { label: "New", value: "new" },
-  { label: "Learning", value: "learning" },
-  { label: "Familiar", value: "familiar" },
-  { label: "Mastered", value: "mastered" },
-];
-
-function SavedWordRow({
+/** Mini card in the grid */
+function MiniCard({
   word,
-  isExpanded,
-  onToggle,
+  onOpen,
   onRemove,
 }: {
   word: string;
-  isExpanded: boolean;
-  onToggle: () => void;
+  onOpen: () => void;
   onRemove: () => void;
 }) {
-  const { data } = useWordLookup(isExpanded ? word : undefined);
-  const savedData = useWordStore((s) => s.words[word]);
+  const { data } = useWordLookup(word);
+  const { play } = useAudioPlayer();
+
+  const entry = data?.[0];
+  const phonetic = entry ? getPhoneticText(entry) : undefined;
+  const audioUrl = entry ? getAudioUrl(entry) : undefined;
+  const firstDef = entry?.meanings[0]?.definitions[0]?.definition;
+  const pos = entry?.meanings[0]?.partOfSpeech;
 
   return (
     <motion.div
-      className={styles.wordRow}
+      className={styles.miniCard}
+      onClick={onOpen}
       layout
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className={styles.rowHeader} onClick={onToggle}>
-        <div className={styles.rowLeft}>
-          <span className={styles.rowWord}>{word}</span>
-          {savedData && (
-            <span className={styles.rowBadge} data-level={savedData.mastery}>
-              {savedData.mastery}
-            </span>
-          )}
+      <div className={styles.miniTop}>
+        <div className={styles.miniWordRow}>
+          <span className={styles.miniWord}>{word}</span>
+          {pos && <span className={styles.miniPos}>{pos}</span>}
         </div>
-        <div className={styles.rowRight}>
-          <span className={styles.rowDate}>
-            {savedData &&
-              new Date(savedData.savedAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              })}
-          </span>
+        <div className={styles.miniActions}>
+          {audioUrl && (
+            <button
+              className={styles.miniIconBtn}
+              onClick={(e) => {
+                e.stopPropagation();
+                play(audioUrl);
+              }}
+              aria-label="Pronounce"
+            >
+              <Volume2 size={13} strokeWidth={2} />
+            </button>
+          )}
           <button
-            className={styles.removeBtn}
+            className={styles.miniRemoveBtn}
             onClick={(e) => {
               e.stopPropagation();
               onRemove();
             }}
             aria-label={`Remove ${word}`}
-            title="Remove word"
           >
-            <Trash2 size={14} strokeWidth={2} />
+            <X size={12} strokeWidth={2.5} />
           </button>
         </div>
       </div>
-
-      <AnimatePresence>
-        {isExpanded && data && data[0] && (
-          <motion.div
-            className={styles.expandedCard}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <WordCard entry={data[0]} compact />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {phonetic && <span className={styles.miniPhonetic}>{phonetic}</span>}
+      {firstDef && (
+        <p className={styles.miniDef}>
+          {firstDef.length > 85 ? firstDef.slice(0, 85) + "…" : firstDef}
+        </p>
+      )}
     </motion.div>
   );
 }
@@ -92,23 +84,19 @@ export default function SavedPage() {
   const navigate = useNavigate();
   const { getSavedWords, removeWord, exportData, importData } = useWordStore();
   const savedWords = getSavedWords();
-  const [filter, setFilter] = useState<MasteryLevel | "all">("all");
   const [search, setSearch] = useState("");
-  const [expandedWord, setExpandedWord] = useState<string | null>(null);
+  const [modalWord, setModalWord] = useState<string | null>(null);
   const [importMsg, setImportMsg] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const filtered = useMemo(() => {
-    let result = savedWords;
-    if (filter !== "all") {
-      result = result.filter((w) => w.mastery === filter);
-    }
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      result = result.filter((w) => w.word.includes(q));
-    }
-    return result;
-  }, [savedWords, filter, search]);
+  const modalEntry = useWordLookup(modalWord ?? undefined);
+
+  const sorted = useMemo(() => {
+    const alpha = [...savedWords].sort((a, b) => a.word.localeCompare(b.word));
+    if (!search.trim()) return alpha;
+    const q = search.toLowerCase();
+    return alpha.filter((w) => w.word.includes(q));
+  }, [savedWords, search]);
 
   const handleExport = useCallback(() => {
     const json = exportData();
@@ -125,25 +113,22 @@ export default function SavedPage() {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
-
       const reader = new FileReader();
       reader.onload = (ev) => {
         try {
           const json = ev.target?.result as string;
           const { added, skipped } = importData(json);
           setImportMsg(
-            `Imported ${added} new word${added !== 1 ? "s" : ""}` +
-              (skipped > 0 ? ` (${skipped} already saved)` : ""),
+            `Imported ${added} word${added !== 1 ? "s" : ""}` +
+              (skipped > 0 ? ` · ${skipped} already saved` : ""),
           );
           setTimeout(() => setImportMsg(null), 4000);
         } catch {
-          setImportMsg("Import failed — check that the file is valid JSON.");
+          setImportMsg("Import failed — check the file format.");
           setTimeout(() => setImportMsg(null), 4000);
         }
       };
       reader.readAsText(file);
-
-      // Reset so the same file can be re-imported if needed
       e.target.value = "";
     },
     [importData],
@@ -153,33 +138,29 @@ export default function SavedPage() {
     return (
       <div className={styles.page}>
         <header className={styles.header}>
-          <h2 className={styles.title}>Saved Words</h2>
-          <div className={styles.headerActions}>
-            <button
-              className={styles.toolbarBtn}
-              onClick={() => fileInputRef.current?.click()}
-              title="Import words from file"
-            >
-              <Upload size={15} strokeWidth={2} />
-              Import
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json"
-              onChange={handleImport}
-              style={{ display: "none" }}
-            />
-          </div>
+          <h2 className={styles.title}>Saved</h2>
+          <button
+            className={styles.toolBtn}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Upload size={14} strokeWidth={2} />
+            Import
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleImport}
+            style={{ display: "none" }}
+          />
         </header>
         {importMsg && <p className={styles.importMsg}>{importMsg}</p>}
         <EmptyState
           icon={<Heart size={28} />}
           title="No saved words yet"
-          description="Heart any word while browsing, or import an existing collection."
+          description="Heart any word while browsing, or import a collection."
           action={
             <button className={styles.ctaBtn} onClick={() => navigate("/search")}>
-              <Search size={16} />
               Start looking up words
             </button>
           }
@@ -191,28 +172,22 @@ export default function SavedPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <div>
-          <h2 className={styles.title}>Saved Words</h2>
-          <p className={styles.subtitle}>
-            {savedWords.length} word{savedWords.length !== 1 ? "s" : ""} in your
-            collection
-          </p>
+        <div className={styles.headerLeft}>
+          <h2 className={styles.title}>Saved</h2>
+          <span className={styles.count}>
+            {savedWords.length} word{savedWords.length !== 1 ? "s" : ""}
+          </span>
         </div>
-        <div className={styles.headerActions}>
+        <div className={styles.headerRight}>
           <button
-            className={styles.toolbarBtn}
+            className={styles.toolBtn}
             onClick={() => fileInputRef.current?.click()}
-            title="Import words from file"
           >
-            <Upload size={15} strokeWidth={2} />
+            <Upload size={14} strokeWidth={2} />
             Import
           </button>
-          <button
-            className={styles.toolbarBtn}
-            onClick={handleExport}
-            title="Export words to JSON file"
-          >
-            <Download size={15} strokeWidth={2} />
+          <button className={styles.toolBtn} onClick={handleExport}>
+            <Download size={14} strokeWidth={2} />
             Export
           </button>
           <input
@@ -227,53 +202,49 @@ export default function SavedPage() {
 
       {importMsg && <p className={styles.importMsg}>{importMsg}</p>}
 
-      {/* Filter bar */}
-      <div className={styles.toolbar}>
-        <div className={styles.filters}>
-          {MASTERY_FILTERS.map(({ label, value }) => (
-            <button
-              key={value}
-              className={`${styles.filterBtn} ${filter === value ? styles.filterActive : ""}`}
-              onClick={() => setFilter(value)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <div className={styles.searchMini}>
-          <Search size={14} strokeWidth={2} />
+      {savedWords.length > 10 && (
+        <div className={styles.filterBar}>
+          <Search size={14} strokeWidth={2} className={styles.filterIcon} />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Filter…"
-            className={styles.searchMiniInput}
+            placeholder="Filter words…"
+            className={styles.filterInput}
           />
         </div>
-      </div>
+      )}
 
-      {/* Word list */}
-      <div className={styles.list}>
+      {/* Mini card grid */}
+      <div className={styles.cardGrid}>
         <AnimatePresence mode="popLayout">
-          {filtered.map((sw) => (
-            <SavedWordRow
+          {sorted.map((sw) => (
+            <MiniCard
               key={sw.word}
               word={sw.word}
-              isExpanded={expandedWord === sw.word}
-              onToggle={() => setExpandedWord(expandedWord === sw.word ? null : sw.word)}
+              onOpen={() => setModalWord(sw.word)}
               onRemove={() => {
-                if (expandedWord === sw.word) setExpandedWord(null);
+                if (modalWord === sw.word) setModalWord(null);
                 removeWord(sw.word);
               }}
             />
           ))}
         </AnimatePresence>
-
-        {filtered.length === 0 && (
-          <p className={styles.noResults}>No words match your current filters.</p>
-        )}
       </div>
+
+      {sorted.length === 0 && search.trim() && (
+        <p className={styles.noResults}>No words match "{search}"</p>
+      )}
+
+      {/* Full word modal */}
+      <WordModal isOpen={!!modalWord} onClose={() => setModalWord(null)}>
+        {modalEntry.isLoading && (
+          <div className={styles.modalLoading}>
+            <div className={styles.spinner} />
+          </div>
+        )}
+        {modalEntry.data && modalEntry.data[0] && <WordCard entry={modalEntry.data[0]} />}
+      </WordModal>
     </div>
   );
 }
