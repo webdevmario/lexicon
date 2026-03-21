@@ -35,32 +35,41 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
     >
+      {/* Word heading */}
       <header className={styles.header}>
-        <div className={styles.wordGroup}>
-          <h1 className={compact ? styles.wordCompact : styles.word}>{entry.word}</h1>
-          {phonetic && <span className={styles.phonetic}>{phonetic}</span>}
-        </div>
-
-        <div className={styles.actions}>
-          {audioUrl && (
-            <button
-              className={`${styles.iconBtn} ${isPlaying ? styles.playing : ""}`}
-              onClick={handlePronounce}
-              aria-label="Pronounce word"
-            >
-              <Volume2 size={17} strokeWidth={2} />
-            </button>
-          )}
-          <button
-            className={`${styles.heartBtn} ${saved ? styles.hearted : ""}`}
-            onClick={handleHeart}
-            aria-label={saved ? "Remove from saved" : "Save word"}
-          >
-            <Heart size={17} strokeWidth={2} fill={saved ? "currentColor" : "none"} />
-          </button>
-        </div>
+        <h1 className={compact ? styles.wordCompact : styles.word}>
+          {entry.word}
+        </h1>
+        {phonetic && <span className={styles.phonetic}>{phonetic}</span>}
       </header>
 
+      {/* Actions — below the word */}
+      <div className={styles.actions}>
+        {audioUrl && (
+          <button
+            className={`${styles.actionBtn} ${isPlaying ? styles.playing : ""}`}
+            onClick={handlePronounce}
+            aria-label="Pronounce word"
+          >
+            <Volume2 size={15} strokeWidth={2} />
+            <span>Listen</span>
+          </button>
+        )}
+        <button
+          className={`${styles.actionBtn} ${saved ? styles.hearted : ""}`}
+          onClick={handleHeart}
+          aria-label={saved ? "Remove from saved" : "Save word"}
+        >
+          <Heart
+            size={15}
+            strokeWidth={2}
+            fill={saved ? "currentColor" : "none"}
+          />
+          <span>{saved ? "Saved" : "Save"}</span>
+        </button>
+      </div>
+
+      {/* Meanings */}
       <div className={styles.meanings}>
         {entry.meanings.map((meaning, i) => (
           <section key={`${meaning.partOfSpeech}-${i}`} className={styles.pos}>
