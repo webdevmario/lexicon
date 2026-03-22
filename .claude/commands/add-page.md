@@ -1,3 +1,5 @@
+# Add Page
+
 Create a new page in this Lexicon app.
 
 Page name: $ARGUMENTS
@@ -13,6 +15,7 @@ Follow the existing patterns exactly:
 4. Add a nav item in `src/components/Shell.tsx` — pick an appropriate Lucide icon and add an entry to the `NAV_ITEMS` array with the correct path and label.
 
 Before writing code, read the following files to understand the conventions:
+
 - `src/pages/DiscoverPage.tsx` and its `.module.css` (for page structure patterns)
 - `src/components/Shell.tsx` (for nav item format)
 - `src/App.tsx` (for routing)
