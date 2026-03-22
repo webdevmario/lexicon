@@ -59,6 +59,13 @@ export default function Shell() {
           <span className={styles.brandName}>Lexicon</span>
         </div>
 
+        {/* Search trigger */}
+        <button className={styles.searchTrigger} onClick={openSearch}>
+          <Search size={15} strokeWidth={2} />
+          <span className={styles.searchTriggerText}>Look up a word…</span>
+          <kbd className={styles.searchTriggerKbd}>&#8984;K</kbd>
+        </button>
+
         <ul className={styles.navList}>
           {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
             <li key={to}>
@@ -77,20 +84,9 @@ export default function Shell() {
         </ul>
       </nav>
 
-      <div className={styles.mainColumn}>
-        {/* Search trigger — centered, subtle */}
-        <div className={styles.topBar}>
-          <button className={styles.searchTrigger} onClick={openSearch}>
-            <Search size={15} strokeWidth={2} />
-            <span className={styles.searchTriggerText}>Look up a word…</span>
-            <kbd className={styles.searchTriggerKbd}>&#8984;K</kbd>
-          </button>
-        </div>
-
-        <main className={styles.content}>
-          <Outlet />
-        </main>
-      </div>
+      <main className={styles.content}>
+        <Outlet />
+      </main>
 
       <SearchModal isOpen={searchOpen} onClose={closeSearch} initialWord={initialWord} />
     </div>
