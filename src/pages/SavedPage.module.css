@@ -101,6 +101,210 @@
   color: var(--text-muted);
 }
 
+.filterClear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.filterClear:hover {
+  color: var(--text-secondary);
+}
+
+/* ── Lists ──────────────────────────────── */
+
+.listsSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.listsSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.listsSectionTitle {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.newListBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.newListBtn:hover {
+  color: var(--text-secondary);
+  border-color: var(--border-medium);
+  background: var(--bg-elevated);
+}
+
+.newListRow {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.newListInput {
+  flex: 1;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 8px var(--space-md);
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.newListInput:focus {
+  border-color: var(--accent);
+}
+
+.newListInput::placeholder {
+  color: var(--text-muted);
+}
+
+.newListSave {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.newListSave:hover {
+  opacity: 0.85;
+}
+
+.listGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-sm);
+}
+
+.listCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: 14px var(--space-md);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.listCard:hover {
+  border-color: var(--border-medium);
+  background: var(--bg-elevated);
+}
+
+.listCardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.listCardName {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.listCardCount {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.listCardArrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.listCard:hover .listCardArrow {
+  opacity: 1;
+}
+
+/* ── All Words section header ───────────── */
+
+.allWordsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-xl);
+  margin-bottom: var(--space-sm);
+}
+
+/* ── Back button ────────────────────────── */
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.backBtn:hover {
+  color: var(--text-secondary);
+}
+
+.renameInput {
+  font-size: 2rem;
+  font-family: var(--font-display);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--accent);
+  color: var(--text-primary);
+  outline: none;
+  padding: 0;
+  width: auto;
+}
+
 /* ── Mini card grid ──────────────────────── */
 
 .cardGrid {
@@ -111,11 +315,11 @@
 
 .miniCard {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 14px var(--space-md);
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px var(--space-md);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: var(--bg-card);
   cursor: pointer;
   transition:
@@ -133,20 +337,6 @@
   transform: scale(0.99);
 }
 
-.miniTop {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-sm);
-}
-
-.miniWordRow {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-sm);
-  min-width: 0;
-}
-
 .miniWord {
   font-family: var(--font-display);
   font-size: 1.05rem;
@@ -154,27 +344,6 @@
   line-height: 1.2;
 }
 
-.miniPos {
-  font-size: 0.68rem;
-  font-weight: 500;
-  color: var(--accent);
-  white-space: nowrap;
-  opacity: 0.7;
-}
-
-.miniActions {
-  display: flex;
-  gap: 2px;
-  flex-shrink: 0;
-  opacity: 0;
-  transition: opacity var(--duration-fast) var(--ease-out);
-}
-
-.miniCard:hover .miniActions {
-  opacity: 1;
-}
-
-.miniIconBtn,
 .miniRemoveBtn {
   display: flex;
   align-items: center;
@@ -186,36 +355,21 @@
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
+  opacity: 0;
+  flex-shrink: 0;
   transition:
+    opacity var(--duration-fast) var(--ease-out),
     color var(--duration-fast) var(--ease-out),
     background var(--duration-fast) var(--ease-out);
 }
 
-.miniIconBtn:hover {
-  color: var(--accent);
-  background: var(--accent-soft);
+.miniCard:hover .miniRemoveBtn {
+  opacity: 1;
 }
 
 .miniRemoveBtn:hover {
   color: #f87171;
   background: rgba(248, 113, 113, 0.1);
-}
-
-.miniPhonetic {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  line-height: 1;
-}
-
-.miniDef {
-  font-size: 0.78rem;
-  line-height: 1.45;
-  color: var(--text-tertiary);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 /* ── Modal loading ───────────────────────── */

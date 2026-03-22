@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { Search as SearchIcon, ArrowRight } from "lucide-react";
+import { Search as SearchIcon, ArrowRight, X } from "lucide-react";
 import styles from "./SearchInput.module.css";
 
 interface SearchInputProps {
@@ -8,6 +8,7 @@ interface SearchInputProps {
   autoFocus?: boolean;
   size?: "default" | "large";
   placeholder?: string;
+  onFocus?: () => void;
 }
 
 export default function SearchInput({
@@ -16,6 +17,7 @@ export default function SearchInput({
   autoFocus = false,
   size = "default",
   placeholder = "Search for a word…",
+  onFocus,
 }: SearchInputProps) {
   const [value, setValue] = useState(initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -54,11 +56,24 @@ export default function SearchInput({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
+        onFocus={onFocus}
         spellCheck={false}
         autoComplete="off"
         autoCapitalize="off"
       />
-      {/* Always rendered, just hidden when empty — prevents layout shift */}
+      {hasValue && (
+        <button
+          type="button"
+          className={styles.clearBtn}
+          onClick={() => {
+            setValue("");
+            inputRef.current?.focus();
+          }}
+          aria-label="Clear"
+        >
+          <X size={14} strokeWidth={2.5} />
+        </button>
+      )}
       <button
         type="submit"
         className={`${styles.submitBtn} ${hasValue ? styles.visible : ""}`}

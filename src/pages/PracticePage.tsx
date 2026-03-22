@@ -19,14 +19,17 @@ import styles from "./PracticePage.module.css";
 /** Small helper to fetch entries for multiple words */
 function useMultiWordLookup(words: string[]) {
   const results = new Map<string, WordEntry>();
+  let pending = 0;
   const queries = words.map((w) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { data } = useWordLookup(w);
+    const { data, isLoading } = useWordLookup(w);
     if (data && data[0]) results.set(w, data[0]);
+    if (isLoading) pending++;
     return data;
   });
 
-  const loading = queries.some((d) => d === undefined);
+  // Consider loaded once we have at least 4 entries or nothing is actively fetching
+  const loading = pending > 0 && results.size < 4;
   return { entries: results, loading };
 }
 

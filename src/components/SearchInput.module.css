@@ -54,6 +54,28 @@
   font-weight: 400;
 }
 
+.clearBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.clearBtn:hover {
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+}
+
 .submitBtn {
   display: flex;
   align-items: center;

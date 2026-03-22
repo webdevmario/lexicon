@@ -1,24 +1,17 @@
-import { useNavigate } from "react-router-dom";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { getWordOfTheDay, getDiscoveryWords } from "@/lib/wotd";
 import { useWordLookup } from "@/hooks/useWordLookup";
 import { useWordStore } from "@/stores/wordStore";
 import WordCard from "@/components/WordCard";
 import WordChip from "@/components/WordChip";
-import SearchInput from "@/components/SearchInput";
 import styles from "./DiscoverPage.module.css";
 
 export default function DiscoverPage() {
-  const navigate = useNavigate();
   const todaysWord = getWordOfTheDay();
   const discoveryWords = getDiscoveryWords(6);
   const { data, isLoading, error } = useWordLookup(todaysWord);
   const savedCount = useWordStore((s) => s.count());
-
-  const handleSearch = (word: string) => {
-    navigate(`/search?q=${encodeURIComponent(word)}`);
-  };
 
   const today = new Date();
   const dateString = today.toLocaleDateString("en-US", {
@@ -52,20 +45,6 @@ export default function DiscoverPage() {
             : `You've collected ${savedCount} word${savedCount !== 1 ? "s" : ""}. Keep going.`}
         </p>
       </motion.header>
-
-      {/* Search */}
-      <motion.div
-        className={styles.searchWrap}
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <SearchInput
-          onSearch={handleSearch}
-          size="large"
-          placeholder="Look up any word…"
-        />
-      </motion.div>
 
       {/* Word of the Day */}
       <motion.section
@@ -105,9 +84,6 @@ export default function DiscoverPage() {
       >
         <div className={styles.sectionHeader}>
           <span className={styles.sectionTitle}>Explore</span>
-          <button className={styles.seeAllBtn} onClick={() => navigate("/search")}>
-            Search <ArrowRight size={14} />
-          </button>
         </div>
         <div className={styles.chipGrid}>
           {discoveryWords.map((word) => (

@@ -64,8 +64,66 @@
   font-weight: 600;
 }
 
+/* ── Main column ────────────────────────── */
+
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topBar {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-md) var(--space-3xl);
+}
+
+/* ── Search trigger button ──────────────── */
+
+.searchTrigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px var(--space-lg);
+  border: 1px solid var(--border-light);
+  border-radius: 100px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.searchTrigger:hover {
+  color: var(--text-secondary);
+  border-color: var(--border-medium);
+  background: var(--bg-tertiary);
+}
+
+.searchTriggerText {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.searchTriggerKbd {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-left: var(--space-sm);
+  line-height: 1;
+}
+
+/* ── Content ────────────────────────────── */
+
 .content {
-  padding: var(--space-2xl) var(--space-3xl);
+  padding: var(--space-xl) var(--space-3xl);
   max-width: 860px;
   width: 100%;
   margin: 0 auto;
@@ -74,6 +132,10 @@
 @media (max-width: 1024px) {
   .layout {
     grid-template-columns: 190px 1fr;
+  }
+
+  .topBar {
+    padding: var(--space-md) var(--space-lg);
   }
 
   .content {

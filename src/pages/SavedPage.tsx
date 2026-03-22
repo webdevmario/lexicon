@@ -1,17 +1,25 @@
 import { useState, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, Search, X, Download, Upload, Volume2 } from "lucide-react";
+import {
+  Heart,
+  Search,
+  X,
+  Download,
+  Upload,
+  Plus,
+  Trash2,
+  ChevronRight,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWordStore } from "@/stores/wordStore";
 import { useWordLookup } from "@/hooks/useWordLookup";
-import { useAudioPlayer } from "@/hooks/useAudioPlayer";
-import { getAudioUrl, getPhoneticText } from "@/lib/api";
+import { useListStore, type WordList } from "@/stores/listStore";
 import WordCard from "@/components/WordCard";
 import WordModal from "@/components/WordModal";
 import EmptyState from "@/components/EmptyState";
 import styles from "./SavedPage.module.css";
 
-/** Mini card in the grid */
+/** Mini card in the grid — just the word, minimalistic */
 function MiniCard({
   word,
   onOpen,
@@ -21,15 +29,6 @@ function MiniCard({
   onOpen: () => void;
   onRemove: () => void;
 }) {
-  const { data } = useWordLookup(word);
-  const { play } = useAudioPlayer();
-
-  const entry = data?.[0];
-  const phonetic = entry ? getPhoneticText(entry) : undefined;
-  const audioUrl = entry ? getAudioUrl(entry) : undefined;
-  const firstDef = entry?.meanings[0]?.definitions[0]?.definition;
-  const pos = entry?.meanings[0]?.partOfSpeech;
-
   return (
     <motion.div
       className={styles.miniCard}
@@ -40,56 +39,171 @@ function MiniCard({
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className={styles.miniTop}>
-        <div className={styles.miniWordRow}>
-          <span className={styles.miniWord}>{word}</span>
-          {pos && <span className={styles.miniPos}>{pos}</span>}
-        </div>
-        <div className={styles.miniActions}>
-          {audioUrl && (
-            <button
-              className={styles.miniIconBtn}
-              onClick={(e) => {
-                e.stopPropagation();
-                play(audioUrl);
-              }}
-              aria-label="Pronounce"
-            >
-              <Volume2 size={13} strokeWidth={2} />
-            </button>
-          )}
-          <button
-            className={styles.miniRemoveBtn}
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove();
-            }}
-            aria-label={`Remove ${word}`}
-          >
-            <X size={12} strokeWidth={2.5} />
-          </button>
-        </div>
-      </div>
-      {phonetic && <span className={styles.miniPhonetic}>{phonetic}</span>}
-      {firstDef && (
-        <p className={styles.miniDef}>
-          {firstDef.length > 85 ? firstDef.slice(0, 85) + "…" : firstDef}
-        </p>
-      )}
+      <span className={styles.miniWord}>{word}</span>
+      <button
+        className={styles.miniRemoveBtn}
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove();
+        }}
+        aria-label={`Remove ${word}`}
+      >
+        <X size={12} strokeWidth={2.5} />
+      </button>
     </motion.div>
+  );
+}
+
+/** A single list card on the saved page */
+function ListCard({
+  list,
+  onOpen,
+}: {
+  list: WordList;
+  onOpen: () => void;
+}) {
+  return (
+    <motion.button
+      className={styles.listCard}
+      onClick={onOpen}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+    >
+      <div className={styles.listCardInfo}>
+        <span className={styles.listCardName}>{list.name}</span>
+        <span className={styles.listCardCount}>
+          {list.words.length} word{list.words.length !== 1 ? "s" : ""}
+        </span>
+      </div>
+      <ChevronRight size={16} className={styles.listCardArrow} />
+    </motion.button>
+  );
+}
+
+/** Detail view when a list is opened */
+function ListDetail({
+  list,
+  onBack,
+}: {
+  list: WordList;
+  onBack: () => void;
+}) {
+  const { removeWordFromList, deleteList, renameList } = useListStore();
+  const [modalWord, setModalWord] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(list.name);
+  const modalEntry = useWordLookup(modalWord ?? undefined);
+
+  const handleRename = () => {
+    const trimmed = editName.trim();
+    if (trimmed && trimmed !== list.name) {
+      renameList(list.id, trimmed);
+    }
+    setIsEditing(false);
+  };
+
+  const handleDelete = () => {
+    onBack();
+    deleteList(list.id);
+  };
+
+  return (
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <div className={styles.headerLeft}>
+          <button className={styles.backBtn} onClick={onBack}>
+            <ChevronRight size={16} style={{ transform: "rotate(180deg)" }} />
+            Back
+          </button>
+          {isEditing ? (
+            <input
+              className={styles.renameInput}
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              onBlur={handleRename}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleRename();
+                if (e.key === "Escape") {
+                  setEditName(list.name);
+                  setIsEditing(false);
+                }
+              }}
+              autoFocus
+            />
+          ) : (
+            <h2
+              className={styles.title}
+              onDoubleClick={() => setIsEditing(true)}
+            >
+              {list.name}
+            </h2>
+          )}
+          <span className={styles.count}>
+            {list.words.length} word{list.words.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+        {!list.isDefault && (
+          <button className={styles.toolBtn} onClick={handleDelete}>
+            <Trash2 size={14} strokeWidth={2} />
+            Delete
+          </button>
+        )}
+      </header>
+
+      {list.words.length === 0 ? (
+        <EmptyState
+          icon={<Heart size={28} />}
+          title="This list is empty"
+          description="Add words to this list from any word card."
+        />
+      ) : (
+        <div className={styles.cardGrid}>
+          <AnimatePresence mode="popLayout">
+            {list.words.map((word) => (
+              <MiniCard
+                key={word}
+                word={word}
+                onOpen={() => setModalWord(word)}
+                onRemove={() => removeWordFromList(list.id, word)}
+              />
+            ))}
+          </AnimatePresence>
+        </div>
+      )}
+
+      <WordModal isOpen={!!modalWord} onClose={() => setModalWord(null)}>
+        {modalEntry.isLoading && (
+          <div className={styles.modalLoading}>
+            <div className={styles.spinner} />
+          </div>
+        )}
+        {modalEntry.data && modalEntry.data[0] && (
+          <WordCard entry={modalEntry.data[0]} />
+        )}
+      </WordModal>
+    </div>
   );
 }
 
 export default function SavedPage() {
   const navigate = useNavigate();
   const { getSavedWords, removeWord, exportData, importData } = useWordStore();
+  const { lists, createList } = useListStore();
   const savedWords = getSavedWords();
   const [search, setSearch] = useState("");
   const [modalWord, setModalWord] = useState<string | null>(null);
   const [importMsg, setImportMsg] = useState<string | null>(null);
+  const [activeListId, setActiveListId] = useState<string | null>(null);
+  const [newListName, setNewListName] = useState("");
+  const [showNewList, setShowNewList] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const modalEntry = useWordLookup(modalWord ?? undefined);
+
+  const activeList = activeListId
+    ? lists.find((l) => l.id === activeListId)
+    : null;
 
   const sorted = useMemo(() => {
     const alpha = [...savedWords].sort((a, b) => a.word.localeCompare(b.word));
@@ -134,6 +248,25 @@ export default function SavedPage() {
     [importData],
   );
 
+  const handleCreateList = () => {
+    const trimmed = newListName.trim();
+    if (trimmed) {
+      createList(trimmed);
+      setNewListName("");
+      setShowNewList(false);
+    }
+  };
+
+  // Show list detail view
+  if (activeList) {
+    return (
+      <ListDetail
+        list={activeList}
+        onBack={() => setActiveListId(null)}
+      />
+    );
+  }
+
   if (savedWords.length === 0) {
     return (
       <div className={styles.page}>
@@ -155,6 +288,50 @@ export default function SavedPage() {
           />
         </header>
         {importMsg && <p className={styles.importMsg}>{importMsg}</p>}
+
+        {/* Lists section even when no saved words */}
+        <section className={styles.listsSection}>
+          <div className={styles.listsSectionHeader}>
+            <h3 className={styles.listsSectionTitle}>Lists</h3>
+            <button
+              className={styles.newListBtn}
+              onClick={() => setShowNewList(true)}
+            >
+              <Plus size={14} strokeWidth={2.5} />
+            </button>
+          </div>
+          {showNewList && (
+            <div className={styles.newListRow}>
+              <input
+                className={styles.newListInput}
+                value={newListName}
+                onChange={(e) => setNewListName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleCreateList();
+                  if (e.key === "Escape") {
+                    setShowNewList(false);
+                    setNewListName("");
+                  }
+                }}
+                placeholder="List name…"
+                autoFocus
+              />
+              <button className={styles.newListSave} onClick={handleCreateList}>
+                Create
+              </button>
+            </div>
+          )}
+          <div className={styles.listGrid}>
+            {lists.map((list) => (
+              <ListCard
+                key={list.id}
+                list={list}
+                onOpen={() => setActiveListId(list.id)}
+              />
+            ))}
+          </div>
+        </section>
+
         <EmptyState
           icon={<Heart size={28} />}
           title="No saved words yet"
@@ -202,39 +379,95 @@ export default function SavedPage() {
 
       {importMsg && <p className={styles.importMsg}>{importMsg}</p>}
 
-      {savedWords.length > 10 && (
-        <div className={styles.filterBar}>
-          <Search size={14} strokeWidth={2} className={styles.filterIcon} />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Filter words…"
-            className={styles.filterInput}
-          />
+      {/* Lists */}
+      <section className={styles.listsSection}>
+        <div className={styles.listsSectionHeader}>
+          <h3 className={styles.listsSectionTitle}>Lists</h3>
+          <button
+            className={styles.newListBtn}
+            onClick={() => setShowNewList(true)}
+          >
+            <Plus size={14} strokeWidth={2.5} />
+          </button>
         </div>
-      )}
-
-      {/* Mini card grid */}
-      <div className={styles.cardGrid}>
-        <AnimatePresence mode="popLayout">
-          {sorted.map((sw) => (
-            <MiniCard
-              key={sw.word}
-              word={sw.word}
-              onOpen={() => setModalWord(sw.word)}
-              onRemove={() => {
-                if (modalWord === sw.word) setModalWord(null);
-                removeWord(sw.word);
+        {showNewList && (
+          <div className={styles.newListRow}>
+            <input
+              className={styles.newListInput}
+              value={newListName}
+              onChange={(e) => setNewListName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleCreateList();
+                if (e.key === "Escape") {
+                  setShowNewList(false);
+                  setNewListName("");
+                }
               }}
+              placeholder="List name…"
+              autoFocus
+            />
+            <button className={styles.newListSave} onClick={handleCreateList}>
+              Create
+            </button>
+          </div>
+        )}
+        <div className={styles.listGrid}>
+          {lists.map((list) => (
+            <ListCard
+              key={list.id}
+              list={list}
+              onOpen={() => setActiveListId(list.id)}
             />
           ))}
-        </AnimatePresence>
-      </div>
+        </div>
+      </section>
 
-      {sorted.length === 0 && search.trim() && (
-        <p className={styles.noResults}>No words match "{search}"</p>
-      )}
+      {/* All saved words */}
+      <section>
+        <div className={styles.allWordsHeader}>
+          <h3 className={styles.listsSectionTitle}>All Words</h3>
+          {savedWords.length > 10 && (
+            <div className={styles.filterBar}>
+              <Search size={14} strokeWidth={2} className={styles.filterIcon} />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Filter words…"
+                className={styles.filterInput}
+              />
+              {search && (
+                <button
+                  className={styles.filterClear}
+                  onClick={() => setSearch("")}
+                >
+                  <X size={12} strokeWidth={2.5} />
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className={styles.cardGrid}>
+          <AnimatePresence mode="popLayout">
+            {sorted.map((sw) => (
+              <MiniCard
+                key={sw.word}
+                word={sw.word}
+                onOpen={() => setModalWord(sw.word)}
+                onRemove={() => {
+                  if (modalWord === sw.word) setModalWord(null);
+                  removeWord(sw.word);
+                }}
+              />
+            ))}
+          </AnimatePresence>
+        </div>
+
+        {sorted.length === 0 && search.trim() && (
+          <p className={styles.noResults}>No words match "{search}"</p>
+        )}
+      </section>
 
       {/* Full word modal */}
       <WordModal isOpen={!!modalWord} onClose={() => setModalWord(null)}>
@@ -243,7 +476,9 @@ export default function SavedPage() {
             <div className={styles.spinner} />
           </div>
         )}
-        {modalEntry.data && modalEntry.data[0] && <WordCard entry={modalEntry.data[0]} />}
+        {modalEntry.data && modalEntry.data[0] && (
+          <WordCard entry={modalEntry.data[0]} />
+        )}
       </WordModal>
     </div>
   );

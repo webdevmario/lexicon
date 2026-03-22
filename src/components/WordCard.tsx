@@ -1,8 +1,10 @@
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Heart, Volume2, ExternalLink } from "lucide-react";
+import { Heart, Volume2, ExternalLink, ListPlus, Check } from "lucide-react";
 import { getAudioUrl, getPhoneticText } from "@/lib/api";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { useWordStore } from "@/stores/wordStore";
+import { useListStore } from "@/stores/listStore";
 import type { WordEntry } from "@/types";
 import styles from "./WordCard.module.css";
 
@@ -14,6 +16,9 @@ interface WordCardProps {
 export default function WordCard({ entry, compact = false }: WordCardProps) {
   const { isSaved, saveWord, removeWord } = useWordStore();
   const { play, isPlaying } = useAudioPlayer();
+  const { lists, addWordToList, removeWordFromList } = useListStore();
+  const [showListMenu, setShowListMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const saved = isSaved(entry.word);
   const audioUrl = getAudioUrl(entry);
@@ -27,6 +32,20 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
   const handlePronounce = () => {
     if (audioUrl) play(audioUrl);
   };
+
+  // Close menu on outside click
+  useEffect(() => {
+    if (!showListMenu) return;
+    const handleClick = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowListMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [showListMenu]);
+
+  const wordLower = entry.word.toLowerCase();
 
   return (
     <motion.article
@@ -67,6 +86,39 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
           />
           <span>{saved ? "Saved" : "Save"}</span>
         </button>
+        <div className={styles.listMenuWrap} ref={menuRef}>
+          <button
+            className={styles.actionBtn}
+            onClick={() => setShowListMenu((v) => !v)}
+            aria-label="Add to list"
+          >
+            <ListPlus size={15} strokeWidth={2} />
+            <span>Add to List</span>
+          </button>
+          {showListMenu && (
+            <div className={styles.listMenu}>
+              {lists.map((list) => {
+                const inList = list.words.includes(wordLower);
+                return (
+                  <button
+                    key={list.id}
+                    className={`${styles.listMenuItem} ${inList ? styles.listMenuItemActive : ""}`}
+                    onClick={() => {
+                      if (inList) {
+                        removeWordFromList(list.id, entry.word);
+                      } else {
+                        addWordToList(list.id, entry.word);
+                      }
+                    }}
+                  >
+                    <span>{list.name}</span>
+                    {inList && <Check size={14} strokeWidth={2.5} />}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Meanings */}
