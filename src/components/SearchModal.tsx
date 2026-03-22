@@ -102,16 +102,15 @@ export default function SearchModal({ isOpen, onClose, initialWord = "" }: Searc
                 autoComplete="off"
                 autoCapitalize="off"
               />
-              {query && (
-                <button
-                  type="button"
-                  className={styles.clearBtn}
-                  onClick={handleClear}
-                  aria-label="Clear"
-                >
-                  <X size={16} strokeWidth={2} />
-                </button>
-              )}
+              <button
+                type="button"
+                className={`${styles.clearBtn} ${query ? styles.clearBtnVisible : ""}`}
+                onClick={handleClear}
+                aria-label="Clear"
+                tabIndex={query ? 0 : -1}
+              >
+                <X size={16} strokeWidth={2} />
+              </button>
             </form>
 
             {/* Results */}

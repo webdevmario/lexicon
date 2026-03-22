@@ -19,38 +19,34 @@ import WordModal from "@/components/WordModal";
 import EmptyState from "@/components/EmptyState";
 import styles from "./SavedPage.module.css";
 
-/** Mini card in the grid — just the word, minimalistic */
-function MiniCard({
+/** A single row in the word list */
+function WordRow({
   word,
   onOpen,
-  onRemove,
 }: {
   word: string;
   onOpen: () => void;
-  onRemove: () => void;
 }) {
+  const { data } = useWordLookup(word);
+  const entry = data?.[0];
+  const firstDef = entry?.meanings[0]?.definitions[0]?.definition;
+
   return (
-    <motion.div
-      className={styles.miniCard}
+    <motion.button
+      className={styles.wordRow}
       onClick={onOpen}
       layout
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
     >
-      <span className={styles.miniWord}>{word}</span>
-      <button
-        className={styles.miniRemoveBtn}
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove();
-        }}
-        aria-label={`Remove ${word}`}
-      >
-        <X size={12} strokeWidth={2.5} />
-      </button>
-    </motion.div>
+      <span className={styles.wordRowWord}>{word}</span>
+      <span className={styles.wordRowDef}>
+        {firstDef ?? ""}
+      </span>
+      <ChevronRight size={14} className={styles.wordRowChevron} />
+    </motion.button>
   );
 }
 
@@ -158,14 +154,13 @@ function ListDetail({
           description="Add words to this list from any word card."
         />
       ) : (
-        <div className={styles.cardGrid}>
+        <div className={styles.wordList}>
           <AnimatePresence mode="popLayout">
             {list.words.map((word) => (
-              <MiniCard
+              <WordRow
                 key={word}
                 word={word}
                 onOpen={() => setModalWord(word)}
-                onRemove={() => removeWordFromList(list.id, word)}
               />
             ))}
           </AnimatePresence>
@@ -436,29 +431,24 @@ export default function SavedPage() {
                 placeholder="Filter words…"
                 className={styles.filterInput}
               />
-              {search && (
-                <button
-                  className={styles.filterClear}
-                  onClick={() => setSearch("")}
-                >
-                  <X size={12} strokeWidth={2.5} />
-                </button>
-              )}
+              <button
+                className={`${styles.filterClear} ${search ? styles.filterClearVisible : ""}`}
+                onClick={() => setSearch("")}
+                tabIndex={search ? 0 : -1}
+              >
+                <X size={12} strokeWidth={2.5} />
+              </button>
             </div>
           )}
         </div>
 
-        <div className={styles.cardGrid}>
+        <div className={styles.wordList}>
           <AnimatePresence mode="popLayout">
             {sorted.map((sw) => (
-              <MiniCard
+              <WordRow
                 key={sw.word}
                 word={sw.word}
                 onOpen={() => setModalWord(sw.word)}
-                onRemove={() => {
-                  if (modalWord === sw.word) setModalWord(null);
-                  removeWord(sw.word);
-                }}
               />
             ))}
           </AnimatePresence>

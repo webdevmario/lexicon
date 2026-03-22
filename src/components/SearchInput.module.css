@@ -66,9 +66,17 @@
   color: var(--text-muted);
   cursor: pointer;
   flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
   transition:
+    opacity var(--duration-fast) var(--ease-out),
     color var(--duration-fast) var(--ease-out),
     background var(--duration-fast) var(--ease-out);
+}
+
+.clearBtnVisible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .clearBtn:hover {

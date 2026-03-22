@@ -61,19 +61,18 @@ export default function SearchInput({
         autoComplete="off"
         autoCapitalize="off"
       />
-      {hasValue && (
-        <button
-          type="button"
-          className={styles.clearBtn}
-          onClick={() => {
-            setValue("");
-            inputRef.current?.focus();
-          }}
-          aria-label="Clear"
-        >
-          <X size={14} strokeWidth={2.5} />
-        </button>
-      )}
+      <button
+        type="button"
+        className={`${styles.clearBtn} ${hasValue ? styles.clearBtnVisible : ""}`}
+        onClick={() => {
+          setValue("");
+          inputRef.current?.focus();
+        }}
+        aria-label="Clear"
+        tabIndex={hasValue ? 0 : -1}
+      >
+        <X size={14} strokeWidth={2.5} />
+      </button>
       <button
         type="submit"
         className={`${styles.submitBtn} ${hasValue ? styles.visible : ""}`}

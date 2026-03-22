@@ -124,8 +124,18 @@
 
 .completeActions {
   display: flex;
-  gap: var(--space-md);
-  align-items: center;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+  max-width: 220px;
+  margin-top: var(--space-sm);
+}
+
+.completeActions .startBtn,
+.completeActions .secondaryBtn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 0;
 }
 
 /* ── Score ────────────────────────────────── */

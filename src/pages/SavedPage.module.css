@@ -65,7 +65,7 @@
   border-radius: var(--radius-sm);
 }
 
-/* Filter */
+/* ── Filter ─────────────────────────────── */
 
 .filterBar {
   display: flex;
@@ -113,6 +113,14 @@
   color: var(--text-muted);
   cursor: pointer;
   flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.filterClearVisible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .filterClear:hover {
@@ -305,71 +313,69 @@
   width: auto;
 }
 
-/* ── Mini card grid ──────────────────────── */
+/* ── Word list (vertical) ───────────────── */
 
-.cardGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: var(--space-sm);
-}
-
-.miniCard {
+.wordList {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px var(--space-md);
+  flex-direction: column;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.wordRow {
+  display: grid;
+  grid-template-columns: 140px 1fr 20px;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: 12px var(--space-md);
+  border: none;
+  border-bottom: 1px solid var(--border-light);
   background: var(--bg-card);
   cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
   transition:
-    border-color var(--duration-fast) var(--ease-out),
-    background var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-out);
-}
-
-.miniCard:hover {
-  border-color: var(--border-medium);
-  background: var(--bg-elevated);
-}
-
-.miniCard:active {
-  transform: scale(0.99);
-}
-
-.miniWord {
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  color: var(--text-primary);
-  line-height: 1.2;
-}
-
-.miniRemoveBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  opacity: 0;
-  flex-shrink: 0;
-  transition:
-    opacity var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out),
     background var(--duration-fast) var(--ease-out);
 }
 
-.miniCard:hover .miniRemoveBtn {
-  opacity: 1;
+.wordRow:last-child {
+  border-bottom: none;
 }
 
-.miniRemoveBtn:hover {
-  color: #f87171;
-  background: rgba(248, 113, 113, 0.1);
+.wordRow:hover {
+  background: var(--bg-elevated);
+}
+
+.wordRowWord {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--text-primary);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wordRowDef {
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wordRowChevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.wordRow:hover .wordRowChevron {
+  opacity: 1;
 }
 
 /* ── Modal loading ───────────────────────── */

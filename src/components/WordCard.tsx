@@ -46,6 +46,7 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
   }, [showListMenu]);
 
   const wordLower = entry.word.toLowerCase();
+  const wordListCount = lists.filter((l) => l.words.includes(wordLower)).length;
 
   return (
     <motion.article
@@ -88,12 +89,12 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
         </button>
         <div className={styles.listMenuWrap} ref={menuRef}>
           <button
-            className={styles.actionBtn}
+            className={`${styles.actionBtn} ${wordListCount > 0 ? styles.listed : ""}`}
             onClick={() => setShowListMenu((v) => !v)}
             aria-label="Add to list"
           >
             <ListPlus size={15} strokeWidth={2} />
-            <span>Add to List</span>
+            <span>{wordListCount > 0 ? `In ${wordListCount} list${wordListCount !== 1 ? "s" : ""}` : "Add to List"}</span>
           </button>
           {showListMenu && (
             <div className={styles.listMenu}>
@@ -108,6 +109,7 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
                         removeWordFromList(list.id, entry.word);
                       } else {
                         addWordToList(list.id, entry.word);
+                        setShowListMenu(false);
                       }
                     }}
                   >
@@ -168,15 +170,25 @@ export default function WordCard({ entry, compact = false }: WordCardProps) {
         </section>
       )}
 
-      {!compact && entry.sourceUrls && entry.sourceUrls.length > 0 && (
+      {!compact && (
         <footer className={styles.footer}>
+          {entry.sourceUrls && entry.sourceUrls.length > 0 && (
+            <a
+              href={entry.sourceUrls[0]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.sourceLink}
+            >
+              Source <ExternalLink size={11} />
+            </a>
+          )}
           <a
-            href={entry.sourceUrls[0]}
+            href={`https://www.merriam-webster.com/dictionary/${encodeURIComponent(entry.word)}`}
             target="_blank"
             rel="noopener noreferrer"
             className={styles.sourceLink}
           >
-            Source <ExternalLink size={11} />
+            Merriam-Webster <ExternalLink size={11} />
           </a>
         </footer>
       )}

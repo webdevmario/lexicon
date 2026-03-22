@@ -87,6 +87,11 @@
   background: var(--accent-soft);
 }
 
+.actionBtn.listed {
+  color: var(--text-secondary);
+  border-color: var(--border-medium);
+}
+
 /* ── List menu ──────────────────────────── */
 
 .listMenuWrap {
@@ -264,6 +269,9 @@
 /* ── Footer ──────────────────────────────── */
 
 .footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
   margin-top: var(--space-lg);
   padding-top: var(--space-md);
   border-top: 1px solid var(--border-light);
